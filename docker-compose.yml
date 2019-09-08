@@ -1,0 +1,67 @@
+version: '3'
+services:
+  Jenkins-3rd:
+    image: jenkinsci/blueocean 
+    container_name: Jenkins-3rd
+    restart: always
+    ports:
+      - 8080
+      - 50000
+    volumes:
+      - ./jenkins-data-3rd:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - docker-network
+    environment:
+      VIRTUAL_HOST: dummy-domain.com
+      VIRTUAL_PORT: 8080
+      VIRTUAL_PROTO: http
+  Jenkins-4th:
+    image: jenkinsci/blueocean 
+    container_name: Jenkins-4th
+    restart: always
+    ports:
+      - 8080
+      - 50000
+    volumes:
+      - ./jenkins-data-4th:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - docker-network
+    environment:
+      VIRTUAL_HOST: 4th.dummy-domain.com
+      VIRTUAL_PORT: 8080
+      VIRTUAL_PROTO: http
+  Jenkins-5th:
+    image: jenkinsci/blueocean 
+    container_name: Jenkins-5th
+    restart: always
+    ports:
+      - 8080
+      - 50000
+    volumes:
+      - ./jenkins-data-5th:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - docker-network
+    environment:
+      VIRTUAL_HOST: 5th.dummy-domain.com
+      VIRTUAL_PORT: 8080
+      VIRTUAL_PROTO: http
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    restart: always
+    privileged: true
+    ports:
+      - "80:80"
+    volumes:                     
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    labels:
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy=true"
+    networks:
+      - docker-network
+networks:
+  docker-network:
+    external: true
+
